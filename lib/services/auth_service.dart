@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import '../core/storage/local_storage.dart';
 
 class AuthService {
 
@@ -13,6 +14,10 @@ class AuthService {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('token', fakeToken);
 
+      // Gunakan LocalStorage helper
+      await LocalStorage.saveLoginStatus(true);
+      await LocalStorage.saveUsername(email.split('@')[0]); // Ambil nama dari email
+      
       print("Login berhasil, token: $fakeToken");
 
       return true;
@@ -30,5 +35,10 @@ class AuthService {
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');
+    
+    // Hapus status login dll
+    await LocalStorage.saveLoginStatus(false);
+    await LocalStorage.saveUsername('');
+    // Atau bisa juga: await LocalStorage.clearAll();
   }
 }

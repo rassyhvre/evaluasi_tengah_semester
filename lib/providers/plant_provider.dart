@@ -1,15 +1,15 @@
 import 'dart:async';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import '../models/plant_data.dart';
+import '../data/services/plant_service.dart';
 
 /// Provider for managing plant monitoring data and state.
 /// 
-/// Currently uses simulated data updates. To integrate with a real API:
-/// 1. Inject/configure your API service
-/// 2. Replace `_simulateDataFetch()` with actual HTTP calls
-/// 3. The UI will update automatically via ChangeNotifier
+/// Delegates all data operations to [PlantService].
+/// The UI updates automatically via ChangeNotifier.
 class PlantProvider extends ChangeNotifier {
+  final PlantService _plantService = PlantService();
+
   List<PlantData> _plants = [];
   bool _isLoading = true;
   String? _errorMessage;
@@ -28,16 +28,14 @@ class PlantProvider extends ChangeNotifier {
     _initializeData();
   }
 
-  /// Initialize data — simulates an API call with a delay.
+  /// Initialize data via PlantService.
   Future<void> _initializeData() async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      // Simulate network delay
-      await Future.delayed(const Duration(seconds: 2));
-      _plants = PlantData.dummyList;
+      _plants = await _plantService.fetchPlants();
       _isLoading = false;
 
       // Start periodic data simulation (every 8 seconds)
@@ -58,25 +56,9 @@ class PlantProvider extends ChangeNotifier {
     });
   }
 
-  /// Simulate small sensor value fluctuations.
+  /// Delegate sensor update simulation to PlantService.
   void _simulateSensorUpdate() {
-    if (_plants.isEmpty) return;
-
-    final random = Random();
-    _plants = _plants.map((plant) {
-      return plant.copyWith(
-        soilMoisture: (plant.soilMoisture + (random.nextDouble() * 4 - 2))
-            .clamp(0.0, 100.0),
-        temperature: (plant.temperature + (random.nextDouble() * 1.0 - 0.5))
-            .clamp(15.0, 45.0),
-        humidity: (plant.humidity + (random.nextDouble() * 3 - 1.5))
-            .clamp(0.0, 100.0),
-        lightIntensity:
-            (plant.lightIntensity + (random.nextDouble() * 5 - 2.5))
-                .clamp(0.0, 100.0),
-      );
-    }).toList();
-
+    _plants = _plantService.simulateSensorUpdate(_plants);
     notifyListeners();
   }
 
@@ -88,25 +70,21 @@ class PlantProvider extends ChangeNotifier {
     }
   }
 
-  /// Toggle the water pump for the selected plant.
+  /// Toggle the water pump for the selected plant via PlantService.
   void togglePump() {
     if (_plants.isEmpty) return;
 
-    final plant = _plants[_selectedPlantIndex];
-    _plants[_selectedPlantIndex] = plant.copyWith(
-      isPumpActive: !plant.isPumpActive,
-      lastWatered: !plant.isPumpActive ? DateTime.now() : null,
-    );
+    _plants[_selectedPlantIndex] =
+        _plantService.togglePump(_plants[_selectedPlantIndex]);
     notifyListeners();
   }
 
-  /// Refresh data — simulates re-fetching from API.
+  /// Refresh data via PlantService.
   Future<void> refreshData() async {
     _isLoading = true;
     notifyListeners();
 
-    await Future.delayed(const Duration(seconds: 1));
-    _plants = PlantData.dummyList;
+    _plants = await _plantService.refreshPlants();
     _isLoading = false;
     notifyListeners();
   }

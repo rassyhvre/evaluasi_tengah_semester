@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../models/post_model.dart';
+import '../../models/post_model.dart';
 
 class PostService {
   final String _baseUrl = 'https://dummyjson.com';

@@ -1,7 +1,7 @@
 import 'dart:convert';
-import '../models/post_model.dart';
+import '../../models/post_model.dart';
 import '../services/post_service.dart';
-import '../core/storage/local_storage.dart';
+import '../../core/storage/local_storage.dart';
 
 class PostResult {
   final List<PostModel> posts;

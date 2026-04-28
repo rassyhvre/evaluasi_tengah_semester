@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../services/auth_service.dart';
-import '../repositories/post_repository.dart';
+import '../data/services/auth_service.dart';
+import '../data/repositories/post_repository.dart';
 import '../models/post_model.dart';
 import '../core/storage/local_storage.dart';
 import '../providers/theme_provider.dart';

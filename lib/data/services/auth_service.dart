@@ -1,5 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import '../core/storage/local_storage.dart';
+import '../../core/storage/local_storage.dart';
 
 class AuthService {
 

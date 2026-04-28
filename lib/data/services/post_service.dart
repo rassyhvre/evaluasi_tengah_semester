@@ -4,9 +4,12 @@ import '../../models/post_model.dart';
 
 class PostService {
   final String _baseUrl = 'https://dummyjson.com';
+  final http.Client client;
+
+  PostService({http.Client? client}) : client = client ?? http.Client();
 
   Future<List<PostModel>> fetchPosts() async {
-    final response = await http.get(
+    final response = await client.get(
       Uri.parse('$_baseUrl/posts?limit=5'),
     );
 
